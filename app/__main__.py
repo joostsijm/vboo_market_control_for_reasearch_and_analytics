@@ -48,4 +48,5 @@ if __name__ == '__main__':
             time.sleep(100)
     except KeyboardInterrupt:
         LOGGER.info('Exiting application')
+        scheduler.shutdown()
         exit()

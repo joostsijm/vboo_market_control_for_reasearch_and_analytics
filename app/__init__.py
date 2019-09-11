@@ -18,7 +18,11 @@ engine = create_engine(os.environ["DATABASE_URI"], client_encoding='utf8')
 Session = sessionmaker(bind=engine)
 
 # scheduler
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(
+    daemon=True,
+    job_defaults={'misfire_grace_time': 5*60},
+)
+
 scheduler.start()
 
 # logging
