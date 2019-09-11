@@ -1,5 +1,7 @@
 """API module"""
 
+import re
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -20,7 +22,6 @@ def download_player_market():
     """Download the market"""
     items = []
     for item_id in ITEMS.values():
-        print(item_id)
         response = requests.get(
             '{}storage/market/{}'.format(BASE_URL, item_id),
             headers=HEADERS
@@ -31,12 +32,11 @@ def download_player_market():
 def parse_item(html):
     """Parse html return item"""
     soup = BeautifulSoup(html, 'html.parser')
-    print(soup.find(class_='storage_buy_button'))
     return {
-        'player_id': int(soup.find(class_='storage_buy_button')['whose']),
+        'player_id': int(re.sub(r'^.*\/', '', soup.select_one('.storage_see.dot')['action'])),
         'player_name': soup.select_one('.storage_see.dot').string,
-        'price': int(soup.find(class_='storage_buy_input')['price']),
+        'price': int(re.sub(r'\..*$', '', soup.find(class_='storage_buy_input')['price'])),
         'amount': int(soup.find(class_='storage_market_number')['max']),
-        'total_offers': int(soup.select_one('.storage_see').string),
+        'total_offers': int(re.sub(r'\..*$', '', soup.select_one('.storage_see').string)),
         'item_type': int(soup.find(class_='storage_market_number')['url']),
     }
