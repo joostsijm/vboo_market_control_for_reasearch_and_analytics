@@ -3,25 +3,16 @@
 import time
 
 from app import SCHEDULER, LOGGER
-from app.app import print_offers
 from app.api import get_player_market, get_state_market
 from app.database import save_resource_market
 
-
-def print_player_market(player_market):
-    """Print player market"""
-    for item in player_market:
-        print('{:3} {:5}'.format(
-            item['id'],
-            item['price'],
-        ))
 
 def job_update_resource_market():
     """Update market"""
     LOGGER.info('Get player market')
     player_market = get_player_market()
     LOGGER.info('Got player market')
-    print_offers(player_market)
+    # print_offers(player_market)
 
     LOGGER.info('Get state market')
     state_market = get_state_market()
