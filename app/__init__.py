@@ -21,6 +21,7 @@ SESSION = sessionmaker(bind=ENGINE)
 SCHEDULER = BackgroundScheduler(
     daemon=True,
     job_defaults={'misfire_grace_time': 5*60},
+    max_instances=5,
 )
 SCHEDULER.start()
 
