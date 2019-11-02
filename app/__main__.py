@@ -24,7 +24,7 @@ def job_update_resource_market():
     LOGGER.info('done saving markets')
 
 if __name__ == '__main__':
-    job_update_resource_market()
+    # job_update_resource_market()
 
     # job
     SCHEDULER.add_job(
