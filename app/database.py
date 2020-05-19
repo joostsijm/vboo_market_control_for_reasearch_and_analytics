@@ -2,9 +2,8 @@
 
 from datetime import datetime
 
-from app import SESSION
-from app.models import State, Region, Player, MarketTrack, StateMarketStat, PlayerMarketStat
-from app.app import calculate_purchage_amount
+from app import SESSION, functions
+from app.models import Region, Player, MarketTrack, StateMarketStat, PlayerMarketStat
 
 
 def get_new_market_track(session, resources, state_resources, items):
@@ -52,10 +51,10 @@ def _save_player_market(session, market_track, market):
             market_stat.price = item_dict['price']
 
             market_stat.total_offers = len(offers)
-            market_stat.half_t_average = calculate_purchage_amount(offers, 5e11)
-            market_stat.one_t_average = calculate_purchage_amount(offers, 1e12)
-            market_stat.two_t_average = calculate_purchage_amount(offers, 2e12)
-            market_stat.five_t_average = calculate_purchage_amount(offers, 5e12)
+            market_stat.half_t_average = functions.calculate_purchage_amount(offers, 5e11)
+            market_stat.one_t_average = functions.calculate_purchage_amount(offers, 1e12)
+            market_stat.two_t_average = functions.calculate_purchage_amount(offers, 2e12)
+            market_stat.five_t_average = functions.calculate_purchage_amount(offers, 5e12)
             market_stat.market_track_id = market_track.id
             session.add(market_stat)
 

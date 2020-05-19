@@ -5,18 +5,20 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from app import BASE_URL, HEADERS, RESOURCES, ITEMS, STATE_ITEMS
+from app import BASE_URL, HEADERS, RESOURCES, STATE_ITEMS
 
 
 def download_item(item_type):
     """Download item id"""
+    tries = 1
     html = ''
-    while not html:
-        response = requests.get(
+    while not html and tries <= 2:
+        response = requests.post(
             '{}storage/market/{}'.format(BASE_URL, item_type),
             headers=HEADERS
         )
         html = response.text
+        tries += 1
     return html
 
 def download_offers(item_type):
@@ -71,7 +73,9 @@ def parse_player_offers(html):
     offers = []
     for offer_tree in offers_tree:
         offers.append({
-            'player_id': int(re.sub(r'^.*\/', '', offer_tree.select_one('.results_date')['action'])),
+            'player_id': int(
+                re.sub(r'^.*\/', '', offer_tree.select_one('.results_date')['action'])
+            ),
             'player_name': offer_tree.select_one('.results_date').string,
             'price': int(float(offer_tree.select('.list_level')[1]['rat'])*100),
             'amount': int(offer_tree.select_one('.list_level.imp.small')['rat']),
@@ -93,7 +97,8 @@ def download_state_market():
     items = []
     for item_type in STATE_ITEMS.values():
         item = download_item(item_type)
-        items.append(parse_state_item(item, item_type))
+        if item:
+            items.append(parse_state_item(item, item_type))
     return items
 
 def parse_state_item(html, item_type):
