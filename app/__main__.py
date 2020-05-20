@@ -16,6 +16,7 @@ if __name__ == '__main__':
         id='job_update_resource_market',
         replace_existing=True,
         minute='0,10,20,30,40,50'
+        # minute='0,5,10,15,20,25,30,35,40,45,50,55'
     )
 
     try:

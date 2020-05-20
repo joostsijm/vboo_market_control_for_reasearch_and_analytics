@@ -23,13 +23,15 @@ def download_item(item_type):
 
 def download_offers(item_type):
     """Download item id"""
+    tries = 1
     html = ''
-    while not html:
+    while not html and tries <= 2:
         response = requests.get(
             '{}storage/listed/{}'.format(BASE_URL, item_type),
             headers=HEADERS
         )
         html = response.text
+        tries += 1
     return html
 
 def get_player_market():
@@ -55,7 +57,7 @@ def download_player_market():
     return resources
 
 def parse_player_item(html, item_type):
-    """Parse html return player item"""
+    """Parse html and return player"""
     soup = BeautifulSoup(html, 'html.parser')
     return {
         'player_id': int(re.sub(r'^.*\/', '', soup.select_one('.storage_see.dot')['action'])),
@@ -67,7 +69,7 @@ def parse_player_item(html, item_type):
     }
 
 def parse_player_offers(html):
-    """Parse html return player item"""
+    """Parse html and return offers"""
     soup = BeautifulSoup(html, 'html.parser')
     offers_tree = soup.find_all(class_='list_link')
     offers = []

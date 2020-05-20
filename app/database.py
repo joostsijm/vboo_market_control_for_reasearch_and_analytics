@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from app import SESSION, functions
+from app import SESSION, functions, MAX_OFFER
 from app.models import Region, Player, MarketTrack, StateMarketStat, PlayerMarketStat
 
 
@@ -39,24 +39,35 @@ def save_player_market(market):
 def _save_player_market(session, market_track, market):
     """Save player market to database"""
     for item_type, offers in market.items():
-        if offers:
-            item_dict = offers[0]
-            market_stat = PlayerMarketStat()
-            player = session.query(Player).get(item_dict['player_id'])
-            if not player:
-                player = save_player(session, item_dict)
-            market_stat.player_id = player.id
-            market_stat.item_type = item_type
-            market_stat.amount = item_dict['amount']
-            market_stat.price = item_dict['price']
+        if not offers:
+            continue
+        item_dict = offers[0]
+        market_stat = PlayerMarketStat()
+        player = session.query(Player).get(item_dict['player_id'])
+        if not player:
+            player = save_player(session, item_dict)
+        market_stat.player_id = player.id
+        market_stat.item_type = item_type
+        market_stat.amount = item_dict['amount']
+        market_stat.price = item_dict['price']
 
-            market_stat.total_offers = len(offers)
-            market_stat.half_t_average = functions.calculate_purchage_amount(offers, 5e11)
-            market_stat.one_t_average = functions.calculate_purchage_amount(offers, 1e12)
-            market_stat.two_t_average = functions.calculate_purchage_amount(offers, 2e12)
-            market_stat.five_t_average = functions.calculate_purchage_amount(offers, 5e12)
-            market_stat.market_track_id = market_track.id
-            session.add(market_stat)
+        market_stat.total_offers = len(offers)
+        one_t_average = functions.calculate_purchage_amount(offers, 1e12) / 100
+        base_average = 3 * MAX_OFFER[item_type] * one_t_average
+        market_stat.base_average = base_average
+        market_stat.one_average = functions.calculate_purchage_amount(offers, 1 * base_average)
+        market_stat.two_average = functions.calculate_purchage_amount(offers, 2 * base_average)
+        market_stat.three_average = functions.calculate_purchage_amount(offers, 3 * base_average)
+        market_stat.four_average = functions.calculate_purchage_amount(offers, 4 * base_average)
+        market_stat.five_average = functions.calculate_purchage_amount(offers, 5 * base_average)
+        market_stat.six_average = functions.calculate_purchage_amount(offers, 6 * base_average)
+        market_stat.seven_average = functions.calculate_purchage_amount(offers, 7 * base_average)
+        market_stat.eight_average = functions.calculate_purchage_amount(offers, 8 * base_average)
+        market_stat.nine_average = functions.calculate_purchage_amount(offers, 9 * base_average)
+        market_stat.ten_average = functions.calculate_purchage_amount(offers, 10 * base_average)
+
+        market_stat.market_track_id = market_track.id
+        session.add(market_stat)
 
 def _save_state_market(session, market_track, market):
     """Save state market"""
